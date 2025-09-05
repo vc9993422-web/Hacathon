@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AgriSathi Chatbot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f4f9f4;
+  margin: 0;
+  padding: 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h1, h2, h3 {
+  color: #2e7d32;
+}
+
+.weather-dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: #ffffff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  width: 150px;
+  text-align: center;
+}
+
+.advisory {
+  background: #e8f5e9;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+#chatbox {
+  background: #ffffff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.msg, .msg2 {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.msg {
+  background-color: #e8f5e9;
+  text-align: left;
+}
+
+.msg2 {
+  background-color: #c8e6c9;
+  text-align: right;
+}
+
+input[type="text"] {
+  width: 80%;
+  padding: 10px;
+  margin: 10px auto;
+  display: block;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  display: block;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #388e3c;
+}
+
+footer {
+  text-align: center;
+  margin-top: 40px;
+  color: #555;
+}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌾 FarmCast</h1>
+    <p>Empowering farmers with real-time weather insights</p>
+    <h2>Ask your farming question:</h2>
+  </header>
+
+  <section class="weather-dashboard">
+    <div class="card"><h3>🌡 Temperature</h3><p>--°C</p></div>
+    <div class="card"><h3>💧 Humidity</h3><p>--%</p></div>
+    <div class="card"><h3>🌬 Wind Speed</h3><p>-- km/h</p></div>
+    <div class="card"><h3>🌦 Condition</h3><p>--</p></div>
+  </section>
+
+  <section class="advisory">
+    <h3>🌾 Crop Advisory</h3>
+    <p id="advice">Loading advice...</p>
+  </section>
+
+  <div id="chatbox"></div>
+
+  <input type="text" id="userInput" placeholder="Type your question..." onkeydown="if(event.key==='Enter') sendMessage()">
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    function sendMessage() {
+      const msg = document.getElementById("userInput").value;
+      fetch(`/get?msg=${encodeURIComponent(msg)}`)
+        .then(res => res.text())
+        .then(reply => {
+          const chatbox = document.getElementById("chatbox");
+          chatbox.innerHTML += `<div class="msg2"><b>You:</b> ${msg}</div>`;
+          chatbox.innerHTML += `<div class="msg"><b>Bot:</b> ${reply}</div>`;
+          document.getElementById("userInput").value = "";
+        });
+    }
+  </script>
+
+  <footer>
+    <p>AgriSathi – Your Farmer Friend</p>
+  </footer>
+  <script>
+    async function sendQuery() {
+  const query = document.getElementById('query').value;
+
+  const res = await fetch('/query', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ query: query })
+  });
+
+  const data = await res.json();
+  document.getElementById('response').innerText = data.response;
+}
+  </script>
+</body>
+</html>
